@@ -8,6 +8,25 @@ mongoose.connect('mongodb+srv://taewon:abcd1234@boilerplate.fyseb.mongodb.net/<d
 }).then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err))
 
+const bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({extended: true})); // application/x-www-form-urlencoded 꼴 데이터 분석해서 가져올 수 있게
+app.use(bodyParser.json()); // application/json 꼴 데이터 분석해서 가져올 수 있게
+
+
+const { User } = require("./models//User");
+
 app.get('/', (req, res) => res.send('Hello World!'))
+
+app.post('/register', (req, res) => { // postman에서 http://localhost:3000/register로 POST해야 함
+    //회원가입 시 필요한 정보들을 클라이언트에서 가져오면
+    //그것들을 데이터베이스에 넣어준다
+    
+    const user = new User(req.body)
+    user.save((err, userInfo) => {
+        if(err) return res.json({ success: false, err}) // 에러 뜰 경우 false 출력
+        return res.status(200).json({ success: true}) // status(200): 성공이란 뜻
+    })
+})
+
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
