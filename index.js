@@ -1,9 +1,10 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const port = 3000 // localhost:3000 으로 접속가능
 
+const config = require('./config/key')
 const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://taewon:abcd1234@boilerplate.fyseb.mongodb.net/<dbname>?retryWrites=true&w=majority', {
+mongoose.connect(config.mongoURI, {
     useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false
 }).then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err))
