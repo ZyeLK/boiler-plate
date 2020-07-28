@@ -86,4 +86,13 @@ app.get('/api/users/auth', auth, (req, res) => { // 중간 auth는 미들웨어�
     }) // 이렇게 하면 유저 정보 받아오기 가능
 })
 
+app.get('/api/users/logout', auth, (req, res) => { //미들웨어 auth 통과하도록
+    //로그아웃 하려는 user를 DB에서 찾기
+    User.findOneAndUpdate({_id: req.user._id}, {token : ''}, (err, user) => { // token 삭제하기 => 로그아웃
+
+        if(err) return res.json({success: false, err});
+        return res.status(200).send({success: true})
+    })
+})
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
