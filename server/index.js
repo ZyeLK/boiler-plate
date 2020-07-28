@@ -1,7 +1,6 @@
 // express
 const express = require('express');
 const app = express();
-const port = 3000; // localhost:3000 으로 접속가능
 
 // mongoose
 const config = require('./config/key');
@@ -23,7 +22,14 @@ app.use(cookieParser());
 const { User } = require('./models/User');
 const { auth } = require('./middleware/auth');
 
-app.get('/', (req, res) => res.send('Hello World!')) // req: 요청 오브젝터, res: 응답 오브젝트
+app.get('/', (req, res) => res.send('Hello World!')); // req: 요청 오브젝터, res: 응답 오브젝트
+
+// client, server 전달 테스트
+app.get('/api/hello', (req, res) => {
+    res.send("안녕하세요~");
+});
+
+
 
 // register route
 app.post('/api/users/register', (req, res) => { // postman에서 http://localhost:3000/api/users/register로 POST해야 함
@@ -95,4 +101,5 @@ app.get('/api/users/logout', auth, (req, res) => { //미들웨어 auth 통과하
     })
 })
 
+const port = 5000; // localhost:5000 으로 접속가능
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
