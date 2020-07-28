@@ -23,7 +23,7 @@ const userSchema = mongoose.Schema({
     },
     role: {
         type: Number,
-        default: 0 // 기본값
+        default: 0 // 기본값. role != 0이면 admin인 것으로 하자.
     },
     image: String, // 오브젝트로 안 만들고 이런 식으로 할 수도
     token: {
@@ -70,13 +70,26 @@ userSchema.methods.generateToken = function(cb){ // cb(err, user)
     //jsonwebtoken 이용해 token 생성
     var token = jwt.sign(user._id.toHexString(), 'secretToken'); // mongoDB 보면 _id 필드 확인 가능. _id는 plain object가 아니어서 toHexString을 해줘야 함
     // user._id와 'secretToken'을 통해 token이 생성됨.
-    // 이 token을 해석할 때 'token'을 넣으면 user._id가 나옴
+    // 이 token을 해석할 때 'secretToken'을 넣으면 user._id가 나옴
 
     // user의 token 필드에 넣기
     user.token = token;
     user.save(function(err){
         if(err) return cb(err);
         cb(null, user);
+    });
+}
+
+// findByToken 스태틱 메소드(document가 아닌 model에 직접 메소드 만들기)
+userSchema.statics.findByToken = function(token, cb){
+    var user = this;
+    jwt.verify(token, 'secretToken', (err, decoded) => { // decoded: decode된 _id
+        // _id 이용해 유저 찾기
+        // 클라이언트에서 가져온 token과 DB에 보관된 토큰 일치해야 찾아짐
+        user.findOne({"_id": decoded, "token": token}, (err, user) => {
+            if(err) return cb(err);
+            cb(null, user);
+        });
     });
 }
 
